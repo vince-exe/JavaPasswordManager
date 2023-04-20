@@ -1,25 +1,19 @@
 package main;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Scanner;
+import password.PasswordManager;
 
 public class OptionsManager {
-	private static final String[] ALGORITHMS = {"AES", "CBC", "PKCS5Padding"};
-	private static String tmpAlgorithm = PasswordManager.ALGORITHM;
-	private static String tmpSavePath = PasswordManager.DEFAULT_SAVE_PATH;
 	
-	private static boolean isInAlgorithms(String str) {
-		for(String s : ALGORITHMS) {
-			if(s.equals(str)) { 
-				return true;
-			}
-		}
-		
-		return false;
-	}
+	private static String tmpAlgorithm = FileManager.ALGORITHM;
+	private static String tmpSavePath = FileManager.DEFAULT_SAVE_PATH;
 	
+	/**
+	 * Configuration Settings menu.
+	 * 
+	 * @param sc a scanner to read informations from the System Input
+	 */
  	public static void configSettings(Scanner sc) {
 		int option = -2;
 		String tmp = new String();
@@ -37,11 +31,11 @@ public class OptionsManager {
 				
 				switch(option) {
 				case 1:
-					System.out.print("\nCurrent Algorithm: " + PasswordManager.ALGORITHM +
+					System.out.print("\nCurrent Algorithm: " + FileManager.ALGORITHM +
 							         "\nInsert an algorithm ( AES / CBC / PKCS5Padding ): ");
 					tmp = sc.nextLine().toUpperCase();
 					
-					if(!isInAlgorithms(tmp)) {
+					if(!PasswordManager.isInAlgorithms(tmp)) {
 						System.out.print("\nI'm sorry but " + tmp + " isn't a valid algorithm for this software\n");
 						break;
 					}
@@ -49,8 +43,8 @@ public class OptionsManager {
 					break;
 					
 				case 2:
-					System.out.print("\nCurrent Default Save Path: " + PasswordManager.DEFAULT_SAVE_PATH +
-									 "\nInsert a path, format: ( Users/test/test.txt ): ");
+					System.out.print("\nCurrent Default Save Path: " + FileManager.DEFAULT_SAVE_PATH +
+									 "\nInsert a path, format: ( C:/Users/User/PersonalArea/Passwords ): ");
 					tmp = sc.nextLine();
 					
 					File file = new File(tmp);
@@ -63,7 +57,7 @@ public class OptionsManager {
 					break;
 					
 				case 0:
-					if(!tmpSavePath.equals(PasswordManager.DEFAULT_SAVE_PATH) || !tmpAlgorithm.equals(PasswordManager.ALGORITHM)) {
+					if(!tmpSavePath.equals(FileManager.DEFAULT_SAVE_PATH) || !tmpAlgorithm.equals(FileManager.ALGORITHM)) {
 						System.out.print("\nThere are new changes, are you sure that you want to exit without saving? ( yes / no): ");
 						tmp = sc.nextLine().toLowerCase();
 						
@@ -77,9 +71,9 @@ public class OptionsManager {
 					break;
 					
 				case -1:
-					if(FileUtils.createAppSettingsFile(tmpAlgorithm, tmpSavePath)) {
-						PasswordManager.ALGORITHM = tmpAlgorithm;
-						PasswordManager.DEFAULT_SAVE_PATH = tmpSavePath;
+					if(FileManager.createAppSettingsFile(tmpAlgorithm, tmpSavePath)) {
+						FileManager.ALGORITHM = tmpAlgorithm;
+						FileManager.DEFAULT_SAVE_PATH = tmpSavePath;
 						return;
 					}
 					
@@ -97,4 +91,38 @@ public class OptionsManager {
 			}
 		}while(true);
 	}
+
+ 	/**
+ 	 * New Password menu.
+ 	 * 
+ 	 * @param sc a scanner to read informations from the System Input
+ 	 */
+ 	public static void newPassword(Scanner sc) {
+ 		String pathToSave;
+ 		String pswTitle;
+ 		
+ 		if(FileManager.DEFAULT_SAVE_PATH.equals("null")) {
+ 			System.out.print("\nInsert a save path: ");
+ 			pathToSave = sc.nextLine();
+ 		}
+ 		else {
+ 			System.out.print("\nDo you want to use: " + FileManager.DEFAULT_SAVE_PATH + " as save path? ( yes / other path / exit ): ");
+ 			pathToSave = sc.nextLine();
+ 			
+ 			if(pathToSave.equals("exit")) { 
+ 				return;
+ 			}
+ 			else if(pathToSave.equals("yes")) {
+ 				pathToSave = FileManager.DEFAULT_SAVE_PATH;
+ 			}
+ 		}
+ 		
+ 		if(!FileManager.checkPath(pathToSave)) {
+ 			System.out.print("\nCant save the new password at: " + pathToSave + "\n");
+ 			return;
+ 		}
+ 		
+ 		System.out.print("\nInsert a title for the password: ");
+ 		pswTitle = sc.nextLine();
+ 	}
 }

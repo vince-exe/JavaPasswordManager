@@ -6,9 +6,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class FileUtils {
+public class FileManager {
 	public static String appSettingsFilePath; 
 	public static String appSettingsDirPath;
+	
+	public static String ALGORITHM = "AES";
+	public static String DEFAULT_SAVE_PATH = "null";
 	
 	public static final byte FAILED_CREATE_DIR_SETTINGS = 000;
 	public static final byte FAILED_CREATE_FILE_SETTINGS = 001;
@@ -19,23 +22,19 @@ public class FileUtils {
 		appSettingsDirPath = System.getenv("APPDATA") + "\\.PasswordManager";
 	}
 	
-	public static boolean checkAppSettingsFile() {
-		return new File(appSettingsFilePath).exists();
-	}
-	
-	public static boolean checkAppSettingsDir() {
-		return new File(appSettingsDirPath).exists();
+	public static boolean checkPath(String path) {
+		return new File(path).exists();
 	}
 	
 	public static int handleSettingsPaths(String algo, String defSavePath) {
 		File dir = new File(appSettingsDirPath);
-		if(!checkAppSettingsDir()) {
+		if(!checkPath(appSettingsDirPath)) {
 			if(!dir.mkdirs()) {
 				return FAILED_CREATE_DIR_SETTINGS;
 			};
 		}
 		
-		if(!checkAppSettingsFile()) {
+		if(!checkPath(appSettingsFilePath)) {
 			if(!createAppSettingsFile(algo, defSavePath)) {
 				return FAILED_CREATE_FILE_SETTINGS;
 			}
