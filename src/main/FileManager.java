@@ -35,7 +35,7 @@ public class FileManager {
 		}
 		
 		if(!checkPath(appSettingsFilePath)) {
-			if(!createAppSettingsFile(algo, defSavePath)) {
+			if(!writeFile(appSettingsFilePath, algo + "\n" + defSavePath)) {
 				return FAILED_CREATE_FILE_SETTINGS;
 			}
 		}
@@ -62,6 +62,21 @@ public class FileManager {
 		}
 	}
 	
+	public static boolean writeFile(String path, String text) {
+		try {
+			FileWriter fw = new FileWriter(path);
+			
+			fw.write(text);
+			fw.close();
+			
+			return true;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+	}
 	public static boolean createAppSettingsFile(String algo, String defSavePath) {
 		try {
 			FileWriter fw = new FileWriter(appSettingsFilePath);

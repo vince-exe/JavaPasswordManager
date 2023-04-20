@@ -2,7 +2,10 @@ package main;
 
 import java.io.File;
 import java.util.Scanner;
+
+import password.Password;
 import password.PasswordManager;
+import utils.Utils;
 
 public class OptionsManager {
 	
@@ -100,6 +103,9 @@ public class OptionsManager {
  	public static void newPassword(Scanner sc) {
  		String pathToSave;
  		String pswTitle;
+ 		String key;
+ 		String content;
+ 		String option;
  		
  		if(FileManager.DEFAULT_SAVE_PATH.equals("null")) {
  			System.out.print("\nInsert a save path: ");
@@ -124,5 +130,33 @@ public class OptionsManager {
  		
  		System.out.print("\nInsert a title for the password: ");
  		pswTitle = sc.nextLine();
+ 		
+ 		System.out.print("\nInsert the content of the password: ");
+ 		content = sc.nextLine();
+ 		
+ 		System.out.print("\nInsert the master key to encrypt the password: ");
+ 		key = sc.nextLine();
+ 		
+ 		System.out.print("\nSave Path: " + pathToSave + "\nTitle " + pswTitle + "\nBody: " + content + "\nMaster Key: " + key + "\n\nAre you sure? ( yes / no ): ");
+ 		option = sc.nextLine().toLowerCase();
+ 		
+ 		if(!option.equals("yes")) {
+ 			return;
+ 		}
+ 		
+ 		String encriptedPsw = Main.passwordManger.addPsw(new Password(pswTitle, content, pathToSave), key);
+ 		if(encriptedPsw == null) {
+ 			System.out.print("\nThe software failed to encrypt the password, please try again.\n");
+ 			return;
+ 		}
+ 		
+ 		String currDate = Utils.getDate(Utils.EU_FORMAT_DATE_TIME);
+
+ 		if(FileManager.writeFile(pathToSave + "\\" + pswTitle + "-" + currDate + ".txt", encriptedPsw)) {
+ 			System.out.print("\nSuccessfully stored the password\n");
+ 		}
+ 		else {
+ 			System.out.print("\nThe software failed to store the password, please try again");
+ 		}
  	}
 }

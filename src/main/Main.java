@@ -10,6 +10,8 @@ public class Main {
 	private static final byte UPDT_PSW = 4;
 	private static final byte DECR_PSW = 5;
 	private static final byte CONF_SETTINGS = 6;
+	private static final byte BACKUP = 7;
+	
 	private static final byte EXIT = 0;
 	
 	public static PasswordManager passwordManger = null;
@@ -60,8 +62,9 @@ public class Main {
 							 "\n3)Delete Password" +
 							 "\n4)Update Password" + 
 							 "\n5)Decrypt Password" + 
-							 "\n6)Config Settings" + 
-							 "\n0)Exit" +
+							 "\n6)Config Settings" +
+							 "\n7)Backup Password" +
+							 "\n0)Exit And Save" +
 							 "\n\nInsert a option ( 0 / 6 ): ");
 			
 			try {
@@ -70,6 +73,7 @@ public class Main {
 				
 				switch (option) {
 				case NEW_PSW:
+					OptionsManager.newPassword(scanner);
 					break;
 					
 				case VIEW_PSWS:
@@ -86,6 +90,9 @@ public class Main {
 				
 				case CONF_SETTINGS:
 					OptionsManager.configSettings(scanner);
+					break;
+				
+				case BACKUP:
 					break;
 					
 				case EXIT:

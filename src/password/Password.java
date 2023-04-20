@@ -5,12 +5,22 @@ import java.util.Objects;
 public class Password {
 	private String title;
 	private String body;
+	private String path;
 	
 	public Password() {};
 	
-	public Password(String title, String body) {
+	public Password(String title, String body, String path) {
 		this.title = title;
 		this.body = body;
+		this.path = path;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	public String getTitle() {
