@@ -1,14 +1,12 @@
 package password;
 
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
@@ -17,31 +15,18 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class PasswordManager {
 	private ArrayList<Password> pwdList;
-	private String algorithm;
+	private final static String ALGORITHM = "AES/CBC/PKCS5Padding";
 	
-	private static final String[] ALGORITHMS = {"AES", "CBC", "PKCS5Padding"};
-	
-	public static boolean isInAlgorithms(String str) {
-		for(String s : ALGORITHMS) {
-			if(s.equals(str)) { 
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	public PasswordManager(String algo) throws InvalidAlgorithm {
-		if(!isInAlgorithms(algo)) {
-			throw new InvalidAlgorithm(algo + " isn't a valid encryption algorithm");
-		}
-		this.algorithm = algo;
+	public PasswordManager()  {
 		this.pwdList = new ArrayList<Password>();
 	}
 	
-	public String addPsw(Password pwd, String key) {
+	public String addPsw(Password pwd, String password) {
 		try {
-			String encriptedPwd = encrypt(pwd.getBody(), generateSecretKey(key));
+			IvParameterSpec ivParameterSpec = generateIv();
+			SecretKey k = getKeyFromPassword(password, Integer.toString(password.length()));
+			
+			String encriptedPwd = encrypt_(ALGORITHM, pwd.getBody(), k, ivParameterSpec);
 			pwdList.add(new Password(pwd.getTitle(), encriptedPwd, pwd.getPath()));
 			
 			return encriptedPwd;
@@ -51,36 +36,64 @@ public class PasswordManager {
 		}
 	}
 	
-	private SecretKeySpec generateSecretKey(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
-		SecureRandom random = new SecureRandom();
-		byte[] salt = new byte[16];
-		random.nextBytes(salt);
-
-		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 256); // AES-256
-		SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-		byte[] key = f.generateSecret(spec).getEncoded();
-		
-		return new SecretKeySpec(key, "AES");
+	public String decrypt(String encriptedText, String password) {
+		try {
+			IvParameterSpec iv = generateIv();
+			SecretKey key = getKeyFromPassword(password, Integer.toString(password.length()));
+			
+			return decrypt_(ALGORITHM, encriptedText, key, iv);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
-	private String encrypt(String valueToEnc, Key key) throws Exception {
-		Cipher c = Cipher.getInstance(algorithm);
-		c.init(Cipher.ENCRYPT_MODE, key);
-		   
-		byte[] encValue = c.doFinal(valueToEnc.getBytes());
-		  
-		String s = Base64.getEncoder().encode(encValue).toString();
-		return s;
+	private IvParameterSpec generateIv() {
+	    byte[] iv = new byte[16];
+	    new SecureRandom().nextBytes(iv);
+	    
+	    return new IvParameterSpec(iv);
 	}
 	
-	private String decrypt(String encryptedValue, Key key) throws Exception {
-		Cipher c = Cipher.getInstance(algorithm);
-		c.init(Cipher.DECRYPT_MODE, key);
-		
-		
-		byte[] decordedValue = Base64.getDecoder().decode(encryptedValue); 
-		byte[] decValue = c.doFinal(decordedValue);
+	public SecretKey getKeyFromPassword(String password, String salt) {
+		try {
+		    SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+		    KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
+		    SecretKey secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
 		    
-		return new String(decValue);
+		    return secret;
+		}
+		catch(Exception e) {
+			return null;
+		}
+	}
+	
+	private static String encrypt_(String algorithm, String input, SecretKey key, IvParameterSpec iv) {
+		try {
+		    Cipher cipher = Cipher.getInstance(algorithm);
+		    cipher.init(Cipher.ENCRYPT_MODE, key, iv);
+		    
+		    byte[] cipherText = cipher.doFinal(input.getBytes());
+		    
+		    return Base64.getEncoder().encodeToString(cipherText);
+		}
+		catch(Exception e) {
+			return null;
+		}
+	}
+	
+	private static String decrypt_(String algorithm, String cipherText, SecretKey key, IvParameterSpec iv)  {
+		try {
+		    Cipher cipher = Cipher.getInstance(algorithm);
+		    cipher.init(Cipher.DECRYPT_MODE, key, iv);
+		    
+		    byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(cipherText));
+		    
+		    return new String(plainText);
+		}
+		catch(Exception e) {
+			return null;
+		}
 	}
 }

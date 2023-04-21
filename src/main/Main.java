@@ -1,6 +1,7 @@
 package main;
 
 import java.util.Scanner;
+
 import password.*;
 
 public class Main {
@@ -20,11 +21,10 @@ public class Main {
 		FileManager.init();
 		/* checks if the user has already a settings file */
 		if(FileManager.checkPath(FileManager.appSettingsFilePath)) {
-			String[] args_ = new String[2];
+			String[] args_ = new String[1];
 			args_ = FileManager.loadFileSettings();
 			if(args_ != null) {
-				FileManager.ALGORITHM = args_[0];
-				FileManager.DEFAULT_SAVE_PATH = args_[1];
+				FileManager.DEFAULT_SAVE_PATH = args_[0];
 			}
 			else {
 				System.out.print("\n[ FATAL ERROR ] n008, check the README.md file to manually solve it");
@@ -40,14 +40,7 @@ public class Main {
 			}
 			System.out.print("\nSoftware: Successfully created the SettingsFile.txt\n\n");
 		}
-		
-		try {
-			passwordManger = new PasswordManager(FileManager.ALGORITHM);
-		}
-		catch(InvalidAlgorithm e) {
-			System.out.print(FileManager.ALGORITHM + " isn't a valid algorithm!!");
-			System.exit(-1);
-		}
+		passwordManger = new PasswordManager();	
 	}
 	
 	public static void main(String[] args) {
@@ -86,6 +79,7 @@ public class Main {
 					break;
 					
 				case DECR_PSW:
+					OptionsManager.decryptPassword(scanner);
 					break;
 				
 				case CONF_SETTINGS:

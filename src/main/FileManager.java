@@ -35,7 +35,7 @@ public class FileManager {
 		}
 		
 		if(!checkPath(appSettingsFilePath)) {
-			if(!writeFile(appSettingsFilePath, algo + "\n" + defSavePath)) {
+			if(!writeFile(appSettingsFilePath, defSavePath)) {
 				return FAILED_CREATE_FILE_SETTINGS;
 			}
 		}
@@ -45,7 +45,7 @@ public class FileManager {
 	
 	public static String[] loadFileSettings() {
 		File file = new File(appSettingsFilePath);
-		String[] s = new String[2];
+		String[] s = new String[1];
 		
 		try {
 			Scanner sc = new Scanner(file);
@@ -77,13 +77,27 @@ public class FileManager {
 		}
 		
 	}
+	
+	public static String loadPassword(String path) {
+		File file = new File(path);
+		
+		try {
+			Scanner sc = new Scanner(file);
+			String pwd = sc.nextLine();
+			
+			sc.close();
+			return pwd;
+		} 
+		catch (Exception e) {
+			return null;
+		}
+	}
+	
 	public static boolean createAppSettingsFile(String algo, String defSavePath) {
 		try {
 			FileWriter fw = new FileWriter(appSettingsFilePath);
 			
-			fw.write(algo + "\n");
 			fw.write(defSavePath);
-			
 			fw.close();
 			
 			return true;

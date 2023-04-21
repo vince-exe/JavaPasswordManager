@@ -4,12 +4,9 @@ import java.io.File;
 import java.util.Scanner;
 
 import password.Password;
-import password.PasswordManager;
 import utils.Utils;
 
 public class OptionsManager {
-	
-	private static String tmpAlgorithm = FileManager.ALGORITHM;
 	private static String tmpSavePath = FileManager.DEFAULT_SAVE_PATH;
 	
 	/**
@@ -23,8 +20,8 @@ public class OptionsManager {
 		
 		do {
 			try {
-				System.out.print("\n1) Change Alghorithm" + 
-						 "\n2) Change Save Path" +
+				System.out.print( 
+						 "\n1) Change Save Path" +
 					     "\n0) Exit Without Save" +
 						 "\n-1) Save And Exit" +
 						 "\n\nInsert a option ( -1 / 2 ): ");
@@ -34,18 +31,6 @@ public class OptionsManager {
 				
 				switch(option) {
 				case 1:
-					System.out.print("\nCurrent Algorithm: " + FileManager.ALGORITHM +
-							         "\nInsert an algorithm ( AES / CBC / PKCS5Padding ): ");
-					tmp = sc.nextLine().toUpperCase();
-					
-					if(!PasswordManager.isInAlgorithms(tmp)) {
-						System.out.print("\nI'm sorry but " + tmp + " isn't a valid algorithm for this software\n");
-						break;
-					}
-					tmpAlgorithm = tmp;
-					break;
-					
-				case 2:
 					System.out.print("\nCurrent Default Save Path: " + FileManager.DEFAULT_SAVE_PATH +
 									 "\nInsert a path, format: ( C:/Users/User/PersonalArea/Passwords ): ");
 					tmp = sc.nextLine();
@@ -60,7 +45,7 @@ public class OptionsManager {
 					break;
 					
 				case 0:
-					if(!tmpSavePath.equals(FileManager.DEFAULT_SAVE_PATH) || !tmpAlgorithm.equals(FileManager.ALGORITHM)) {
+					if(!tmpSavePath.equals(FileManager.DEFAULT_SAVE_PATH)) {
 						System.out.print("\nThere are new changes, are you sure that you want to exit without saving? ( yes / no): ");
 						tmp = sc.nextLine().toLowerCase();
 						
@@ -74,8 +59,7 @@ public class OptionsManager {
 					break;
 					
 				case -1:
-					if(FileManager.createAppSettingsFile(tmpAlgorithm, tmpSavePath)) {
-						FileManager.ALGORITHM = tmpAlgorithm;
+					if(FileManager.writeFile(FileManager.appSettingsFilePath, tmpSavePath)) {
 						FileManager.DEFAULT_SAVE_PATH = tmpSavePath;
 						return;
 					}
@@ -158,5 +142,40 @@ public class OptionsManager {
  		else {
  			System.out.print("\nThe software failed to store the password, please try again");
  		}
+ 	}
+
+ 	public static void decryptPassword(Scanner sc) {
+ 		int option = 0;
+ 		
+ 		do {
+ 			try {
+ 	 			System.out.print(
+					     "\n1) Password Index" +
+						 "\n2) Decrypt All" +
+					     "\n0) Exit" +
+						 "\n\nInsert an option ( 0 / 3 ): ");
+ 	 			option = sc.nextInt();
+ 	 			sc.nextLine();
+		
+				switch(option) {					
+				case 1:
+					break;
+					
+				case 2:
+					break;
+					
+				case 0:
+					return;
+					
+				default:
+					System.out.print("\nInsert a valid option!!\n");
+					break;
+				}
+ 			}
+ 			catch(java.util.InputMismatchException e) {
+ 				System.out.print("\nInsert a valid option!!\n");
+ 				sc.nextLine();
+ 			}
+ 		} while(true);
  	}
 }
