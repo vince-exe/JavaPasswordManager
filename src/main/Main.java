@@ -1,7 +1,6 @@
 package main;
 
 import java.util.Scanner;
-
 import password.*;
 
 public class Main {
@@ -10,53 +9,38 @@ public class Main {
 	private static final byte DEL_PSW = 3;
 	private static final byte UPDT_PSW = 4;
 	private static final byte DECR_PSW = 5;
-	private static final byte CONF_SETTINGS = 6;
-	private static final byte BACKUP = 7;
+	private static final byte BACKUP = 6;
 	
 	private static final byte EXIT = 0;
 	
-	public static PasswordManager passwordManger = null;
+	public static PasswordManager passwordManager;
 	
 	public static void init() {
 		FileManager.init();
-		/* checks if the user has already a settings file */
-		if(FileManager.checkPath(FileManager.appSettingsFilePath)) {
-			String[] args_ = new String[1];
-			args_ = FileManager.loadFileSettings();
-			if(args_ != null) {
-				FileManager.DEFAULT_SAVE_PATH = args_[0];
-			}
-			else {
-				System.out.print("\n[ FATAL ERROR ] n008, check the README.md file to manually solve it");
-				System.exit(-1);
-			}
-		}
-		else {
-			/* try to create a settings file for the user */
-			int err = FileManager.handleSettingsPaths(FileManager.ALGORITHM, FileManager.DEFAULT_SAVE_PATH);
-			if( err != 1) {
-				System.out.print("\n[ FATAl ERROR ] n" + err + ", check the README.md file to manually solve it");
-				System.exit(-1);
-			}
-			System.out.print("\nSoftware: Successfully created the SettingsFile.txt\n\n");
-		}
-		passwordManger = new PasswordManager();	
+		
+		passwordManager = new PasswordManager(FileManager.loadPasswords(FileManager.appUserPasswords));
 	}
+	
+ 	public static void printPasswords() {
+ 		for(int i = 0; i < Main.passwordManager.getSize(); i++) {
+ 			Password tmp = Main.passwordManager.getPasswordAt(i);
+ 			System.out.print("\nIndex: " + i +
+ 							 "\nTitle: " + tmp.getTitle() + "\n");
+ 		}
+ 	}
 	
 	public static void main(String[] args) {
 		int option = -1;
 		Scanner scanner = new Scanner(System.in);
 		
 		init();
-		
 		do {	
 			System.out.print("\n1)New Password" +
 							 "\n2)View Passwords ( Path + Name )" + 
 							 "\n3)Delete Password" +
 							 "\n4)Update Password" + 
 							 "\n5)Decrypt Password" + 
-							 "\n6)Config Settings" +
-							 "\n7)Backup Password" +
+							 "\n6)Backup Password" +
 							 "\n0)Exit And Save" +
 							 "\n\nInsert a option ( 0 / 6 ): ");
 			
@@ -70,6 +54,7 @@ public class Main {
 					break;
 					
 				case VIEW_PSWS:
+					printPasswords();
 					break;
 				
 				case DEL_PSW:
@@ -82,14 +67,16 @@ public class Main {
 					OptionsManager.decryptPassword(scanner);
 					break;
 				
-				case CONF_SETTINGS:
-					OptionsManager.configSettings(scanner);
-					break;
-				
 				case BACKUP:
 					break;
 					
 				case EXIT:
+					if(FileManager.storePasswords(Main.passwordManager.getPswList(), FileManager.appUserPasswords)) {
+						System.out.print("\nSuccessfully stored the lastest added passwords.");
+					}
+					else {
+						System.out.print("\nThe software failed to store the last passwords..\nCheck the lastest backup.");
+					}
 					break;
 					
 				default:

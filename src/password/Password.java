@@ -1,26 +1,38 @@
 package password;
 
 import java.util.Objects;
+import javax.crypto.spec.IvParameterSpec;
 
 public class Password {
 	private String title;
 	private String body;
-	private String path;
+	private IvParameterSpec iv;
 	
 	public Password() {};
 	
-	public Password(String title, String body, String path) {
+	public Password(String title, String body, IvParameterSpec iv) {
 		this.title = title;
 		this.body = body;
-		this.path = path;
+		this.iv = iv;
 	}
 
-	public String getPath() {
-		return path;
+	public Password(String title, String body, byte[] b) {
+		this.title = title;
+		this.body = body;
+		this.iv = new IvParameterSpec(b);
+	}
+	
+	public Password(String title, String body) {
+		this.title = title;
+		this.body = body;
+	}
+	
+	public IvParameterSpec getIv() {
+		return iv;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setIv(IvParameterSpec iv) {
+		this.iv = iv;
 	}
 
 	public String getTitle() {
@@ -38,7 +50,7 @@ public class Password {
 	public void setBody(String body) {
 		this.body = body;
 	}
-
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(body, title);

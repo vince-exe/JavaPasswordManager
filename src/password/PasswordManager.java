@@ -17,36 +17,55 @@ public class PasswordManager {
 	private ArrayList<Password> pwdList;
 	private final static String ALGORITHM = "AES/CBC/PKCS5Padding";
 	
+	public ArrayList<Password> getPswList() {
+		return this.pwdList;
+	}
+	
 	public PasswordManager()  {
 		this.pwdList = new ArrayList<Password>();
 	}
 	
-	public String addPsw(Password pwd, String password) {
+	public PasswordManager(ArrayList<Password> p) {
+		this.pwdList = p;
+	}
+	
+	public String addPsw(String title, String body, String path, String password) {
 		try {
 			IvParameterSpec ivParameterSpec = generateIv();
+			
 			SecretKey k = getKeyFromPassword(password, Integer.toString(password.length()));
+			String encBody = encrypt_(ALGORITHM, body, k, ivParameterSpec);
+			pwdList.add(new Password(title, encBody, ivParameterSpec));
 			
-			String encriptedPwd = encrypt_(ALGORITHM, pwd.getBody(), k, ivParameterSpec);
-			pwdList.add(new Password(pwd.getTitle(), encriptedPwd, pwd.getPath()));
-			
-			return encriptedPwd;
+			return encBody;
 		} 
 		catch (Exception e) {
 			return null;
 		}
 	}
 	
-	public String decrypt(String encriptedText, String password) {
+	public String decrypt(Password pwd, String password) {
 		try {
-			IvParameterSpec iv = generateIv();
 			SecretKey key = getKeyFromPassword(password, Integer.toString(password.length()));
 			
-			return decrypt_(ALGORITHM, encriptedText, key, iv);
+			return decrypt_(ALGORITHM, pwd.getBody(), key, pwd.getIv());
 		}
 		catch(Exception e) {
-			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public Password getPasswordAt(int index) {
+		try {
+			return this.pwdList.get(index);
+		}
+		catch(IndexOutOfBoundsException  e) {
+			return null;
+		}	
+	}
+	
+	public int getSize() {
+		return this.pwdList.size();
 	}
 	
 	private IvParameterSpec generateIv() {

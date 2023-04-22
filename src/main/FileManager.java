@@ -1,109 +1,71 @@
 package main;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Scanner;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+
+import javax.crypto.spec.IvParameterSpec;
+
+import password.Password;
+import password.PasswordSerialized;
 
 public class FileManager {
-	public static String appSettingsFilePath; 
-	public static String appSettingsDirPath;
-	
-	public static String ALGORITHM = "AES";
-	public static String DEFAULT_SAVE_PATH = "null";
-	
-	public static final byte FAILED_CREATE_DIR_SETTINGS = 000;
-	public static final byte FAILED_CREATE_FILE_SETTINGS = 001;
-	public static final byte SUCCESS = 1;
+	public static String appUserPasswords; 
+	public static String appDirPath;
 	
 	public static void init() {
-		appSettingsFilePath = System.getenv("APPDATA") + "\\.PasswordManager\\app_settings.txt";
-		appSettingsDirPath = System.getenv("APPDATA") + "\\.PasswordManager";
+		appUserPasswords = System.getenv("APPDATA") + "\\.PasswordManager\\user_passwords.txt";
+		appDirPath = System.getenv("APPDATA") + "\\.PasswordManager";
 	}
 	
 	public static boolean checkPath(String path) {
 		return new File(path).exists();
 	}
 	
-	public static int handleSettingsPaths(String algo, String defSavePath) {
-		File dir = new File(appSettingsDirPath);
-		if(!checkPath(appSettingsDirPath)) {
-			if(!dir.mkdirs()) {
-				return FAILED_CREATE_DIR_SETTINGS;
-			};
-		}
-		
-		if(!checkPath(appSettingsFilePath)) {
-			if(!writeFile(appSettingsFilePath, defSavePath)) {
-				return FAILED_CREATE_FILE_SETTINGS;
-			}
-		}
-		
-		return SUCCESS;
-	}
-	
-	public static String[] loadFileSettings() {
-		File file = new File(appSettingsFilePath);
-		String[] s = new String[1];
-		
+	public static boolean storePasswords(ArrayList<Password> pwdL, String path) {
 		try {
-			Scanner sc = new Scanner(file);
-			int i = 0;
-			while(sc.hasNextLine()) {
-				s[i++] = sc.nextLine();
+			ArrayList<PasswordSerialized> pwdS = new ArrayList<PasswordSerialized>();
+			
+			for(Password pw : pwdL) {
+				pwdS.add(new PasswordSerialized(pw.getTitle(), pw.getBody(), pw.getPath(), pw.getIv().getIV()));
 			}
 			
-			sc.close();
-			return s;
-		} 
-		catch (FileNotFoundException e) {
-			return null;
-		}
-	}
-	
-	public static boolean writeFile(String path, String text) {
-		try {
-			FileWriter fw = new FileWriter(path);
-			
-			fw.write(text);
-			fw.close();
-			
+	        FileOutputStream fop = new FileOutputStream(path);
+	        ObjectOutputStream oos = new ObjectOutputStream(fop);
+	        
+	        oos.writeObject(pwdS);
+	        oos.close();
+	        
 			return true;
 		}
-		catch (IOException e) {
-			e.printStackTrace();
+		catch(Exception e) {
 			return false;
 		}
-		
 	}
 	
-	public static String loadPassword(String path) {
-		File file = new File(path);
-		
+	@SuppressWarnings("unchecked")
+	public static ArrayList<Password> loadPasswords(String path) {
 		try {
-			Scanner sc = new Scanner(file);
-			String pwd = sc.nextLine();
-			
-			sc.close();
-			return pwd;
-		} 
-		catch (Exception e) {
+	        FileInputStream fis = new FileInputStream(path);
+	        ObjectInputStream ois = new ObjectInputStream(fis);
+	        
+	        ArrayList<PasswordSerialized> woi = new ArrayList<PasswordSerialized>();
+	        woi = (ArrayList<PasswordSerialized>)ois.readObject();
+	   
+	        ois.close();
+	        
+	        ArrayList<Password> pswL = new ArrayList<Password>();
+	        for(PasswordSerialized pwS : woi) {
+	        	pswL.add(new Password(pwS.getTitle(), pwS.getBody(), pwS.getPath(), new IvParameterSpec(pwS.getIv())));
+	        }
+	        
+			return pswL;
+		}	
+		catch(Exception e) {
 			return null;
-		}
-	}
-	
-	public static boolean createAppSettingsFile(String algo, String defSavePath) {
-		try {
-			FileWriter fw = new FileWriter(appSettingsFilePath);
-			
-			fw.write(defSavePath);
-			fw.close();
-			
-			return true;
-		} 
-		catch (IOException e) {
-			return false;
 		}
 	}
 }	
