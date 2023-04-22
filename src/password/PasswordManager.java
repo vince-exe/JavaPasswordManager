@@ -29,7 +29,7 @@ public class PasswordManager {
 		this.pwdList = p;
 	}
 	
-	public String addPsw(String title, String body, String path, String password) {
+	public String addPsw(String title, String body, String password) {
 		try {
 			IvParameterSpec ivParameterSpec = generateIv();
 			

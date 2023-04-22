@@ -7,13 +7,11 @@ public class PasswordSerialized implements Serializable {
 	
 	private String title;
 	private String body;
-	private String path;
 	private byte[] iv;
 	
-	public PasswordSerialized(String title, String body, String path, byte[] iv) {
+	public PasswordSerialized(String title, String body, byte[] iv) {
 		this.title = title;
 		this.body = body;
-		this.path = path;
 		this.iv = iv;
 	}
 
@@ -31,14 +29,6 @@ public class PasswordSerialized implements Serializable {
 
 	public void setBody(String body) {
 		this.body = body;
-	}
-
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
 	}
 
 	public byte[] getIv() {

@@ -28,9 +28,9 @@ public class FileManager {
 	public static boolean storePasswords(ArrayList<Password> pwdL, String path) {
 		try {
 			ArrayList<PasswordSerialized> pwdS = new ArrayList<PasswordSerialized>();
-			
+			 
 			for(Password pw : pwdL) {
-				pwdS.add(new PasswordSerialized(pw.getTitle(), pw.getBody(), pw.getPath(), pw.getIv().getIV()));
+				pwdS.add(new PasswordSerialized(pw.getTitle(), pw.getBody(), pw.getIv().getIV()));
 			}
 			
 	        FileOutputStream fop = new FileOutputStream(path);
@@ -59,7 +59,7 @@ public class FileManager {
 	        
 	        ArrayList<Password> pswL = new ArrayList<Password>();
 	        for(PasswordSerialized pwS : woi) {
-	        	pswL.add(new Password(pwS.getTitle(), pwS.getBody(), pwS.getPath(), new IvParameterSpec(pwS.getIv())));
+	        	pswL.add(new Password(pwS.getTitle(), pwS.getBody(), new IvParameterSpec(pwS.getIv())));
 	        }
 	        
 			return pswL;

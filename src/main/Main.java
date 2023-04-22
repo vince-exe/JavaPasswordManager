@@ -71,10 +71,7 @@ public class Main {
 					break;
 					
 				case EXIT:
-					if(FileManager.storePasswords(Main.passwordManager.getPswList(), FileManager.appUserPasswords)) {
-						System.out.print("\nSuccessfully stored the lastest added passwords.");
-					}
-					else {
+					if(!FileManager.storePasswords(Main.passwordManager.getPswList(), FileManager.appUserPasswords)) {
 						System.out.print("\nThe software failed to store the last passwords..\nCheck the lastest backup.");
 					}
 					break;
