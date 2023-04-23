@@ -21,6 +21,29 @@ public class OptionsManager {
  		}
  	}
  	
+ 	private static void decryptAll(String key) {
+ 		String content = new String();
+ 		int index = 0;
+ 		
+ 		for(Password p : Main.passwordManager.getPswList()) {
+ 			content = Main.passwordManager.decrypt(p, key);
+ 			
+ 			if(content != null) {
+ 	 			System.out.print("\nIndex: " + index +
+						 "\nTitle: " + p.getTitle() +
+						 "\nContent: " + content + "\n"
+						 );
+ 			}
+ 			else {
+ 	 			System.out.print("\nIndex: " + index +
+						 "\nTitle: " + p.getTitle() +
+						 "\nContent: [ Error ] bad key.\n"
+						 );
+ 			}
+ 			index++;
+ 		}
+ 	}
+ 	
  	/**
  	 * Decrypt Passwords Menu.
  	 * 
@@ -69,8 +92,15 @@ public class OptionsManager {
 					
 					System.out.print("\nEnter any key to continue...");
 					sc.nextLine();
+					break;
 					
 				case 2:
+					System.out.print("\n[ NOTE ]: if not all the passwords have the same Master Key, there will be some unencrypted passwords\n");
+					
+					System.out.print("\nMaster Key: ");
+					tmp = sc.nextLine();
+					
+					decryptAll(tmp);
 					break;
 				
 				case 3:
