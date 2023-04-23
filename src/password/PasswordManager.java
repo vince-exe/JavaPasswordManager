@@ -39,6 +39,16 @@ public class PasswordManager {
 		return false;
 	}
 	
+	public Password getPwdByTitle(String title) {
+		for(Password p : this.pwdList) {
+			if(p.getTitle().equals(title)) {
+				return p;
+			}
+		}
+		
+		return null;
+	}
+	
 	public boolean addPsw(String title, String body, String password) {
 		try {
 			IvParameterSpec ivParameterSpec = generateIv();
@@ -63,6 +73,25 @@ public class PasswordManager {
 		catch(Exception e) {
 			return null;
 		}
+	}
+	
+	public boolean removePwd(String title) {
+		int index = 0;
+		boolean found = false;
+		
+		for(Password p : this.pwdList) {
+			if(p.getTitle().equals(title)) {
+				found = true;
+				break;
+			}
+			index++;
+		}
+		
+		if(found) {
+			this.pwdList.remove(index);
+		}
+		
+		return found;
 	}
 	
 	public Password getPasswordAt(int index) {

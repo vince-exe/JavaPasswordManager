@@ -145,4 +145,64 @@ public class OptionsManager {
  			System.out.print("\nThe software failed to save the password\n");
  		}
  	}
+
+ 	/**
+ 	 * 
+ 	 * @param sc a scanner to read informations from the System.in
+ 	 * 
+ 	 * @return true if the operation went successfully, else no
+ 	 */
+ 	private static Password privateDelPwd(Scanner sc) {
+ 		String title;
+ 		String masterKey;
+ 		
+ 		System.out.print("\nPassword Title: ");
+ 		title = sc.nextLine();
+ 		
+ 		System.out.print("\nMaster Key: ");
+ 		masterKey = sc.nextLine();
+ 		
+ 		Password pwd = Main.passwordManager.getPwdByTitle(title);
+ 		if(pwd == null) {
+ 			System.out.print("\nNo password found with title: " + title + "\n");
+ 			return null;
+ 		}
+ 		
+ 		String dec = Main.passwordManager.decrypt(pwd, masterKey);
+ 		if(dec == null) {
+ 			System.out.print("\nMaster Key for password with title: " + title + " invalid\n");
+ 			return null;
+ 		}
+ 		
+ 		Main.passwordManager.removePwd(title);
+ 		return pwd;
+ 	}
+ 	
+ 	/**
+ 	 * Delete Password Menu.
+ 	 * 
+ 	 * @param sc a scanner to read informations from the System.in
+ 	 */
+ 	public static void deletePassword(Scanner sc) {
+ 		if(privateDelPwd(sc) != null) {
+ 			System.out.print("\nSuccessfully removed the password\n");
+ 		}
+ 	}
+ 	
+ 	public static void updatePassword(Scanner sc) {
+ 		Password p = privateDelPwd(sc);
+ 		String content;
+ 		String masterKey;
+ 		
+ 		if(p != null) {
+ 			System.out.print("\nInsert the new content: ");
+ 			content = sc.nextLine();
+ 			
+ 			System.out.print("\nNew Master Key: ");
+ 			masterKey = sc.nextLine();
+ 			
+ 			Main.passwordManager.addPsw(p.getTitle(), content, masterKey);
+ 			System.out.print("\nSuccessfully update the password\n");
+ 		}
+ 	}
 }

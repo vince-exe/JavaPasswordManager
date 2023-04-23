@@ -80,9 +80,11 @@ public class Main {
 					break;
 				
 				case DEL_PSW:
+					OptionsManager.deletePassword(scanner);
 					break;
 				
 				case UPDT_PSW:
+					OptionsManager.updatePassword(scanner);
 					break;
 					
 				case DECR_PSW:
