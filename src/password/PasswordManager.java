@@ -29,7 +29,17 @@ public class PasswordManager {
 		this.pwdList = p;
 	}
 	
-	public String addPsw(String title, String body, String password) {
+	public boolean findByTitle(String title) {
+		for(Password p : this.pwdList) {
+			if(p.getTitle().equals(title)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean addPsw(String title, String body, String password) {
 		try {
 			IvParameterSpec ivParameterSpec = generateIv();
 			
@@ -37,10 +47,10 @@ public class PasswordManager {
 			String encBody = encrypt_(ALGORITHM, body, k, ivParameterSpec);
 			pwdList.add(new Password(title, encBody, ivParameterSpec));
 			
-			return encBody;
+			return true;
 		} 
 		catch (Exception e) {
-			return null;
+			return false;
 		}
 	}
 	

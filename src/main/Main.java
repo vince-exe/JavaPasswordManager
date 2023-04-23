@@ -18,6 +18,28 @@ public class Main {
 	public static void init() {
 		FileManager.init();
 		
+		/* checks if the folder doesn't exist */
+		if(!FileManager.checkPath(FileManager.appDirPath)) {
+			if(!FileManager.mkdir(FileManager.appDirPath)) {
+				System.out.print("\n[ System Error ]: 800, the software failed to create the .PasswordManager folder.\nCheck README.md to solve the error.");
+				System.exit(-1);
+			};
+			if(!FileManager.mkfile(FileManager.appUserPasswords)) {
+				System.out.print("\n[ System Error ]: 700, the software failed to create the users_passwords file.\nCheck README.md to solve the error.");
+				System.exit(-1);
+			}
+			System.out.print("\nSuccessfully created System Files!\n");
+		}
+		else {
+			if(!FileManager.checkPath(FileManager.appUserPasswords)) {
+				if(!FileManager.mkfile(FileManager.appUserPasswords)) {
+					System.out.print("\n[ System Error ]: 700, the software failed to create the users_passwords file.\nCheck README.md to solve the error.");
+					System.exit(-1);
+				}
+				System.out.print("\nSuccessfully created System Files!\n");
+			}
+		}
+		
 		passwordManager = new PasswordManager(FileManager.loadPasswords(FileManager.appUserPasswords));
 	}
 	
@@ -77,13 +99,13 @@ public class Main {
 					break;
 					
 				default:
-					System.out.print("\nInsert a valid option...");
+					System.out.print("\nInsert a valid option...\n");
 					scanner.nextLine();
 					break;
 				}
 			}
 			catch(java.util.InputMismatchException e) {
-				System.out.print("\nInsert a valid option...");
+				System.out.print("\nInsert a valid option...\n");
 				scanner.nextLine();
 			}
 		}while(option != EXIT);

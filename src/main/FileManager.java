@@ -25,6 +25,24 @@ public class FileManager {
 		return new File(path).exists();
 	}
 	
+	public static boolean mkdir(String path) {
+		File file = new File(path);
+		
+		return file.mkdir();
+	}
+	
+	public static boolean mkfile(String path) {
+		try {
+			File file = new File(path);
+			file.createNewFile();
+			
+			return true;
+		}
+		catch(Exception e) {
+			return false;
+		}
+	}
+	
 	public static boolean storePasswords(ArrayList<Password> pwdL, String path) {
 		try {
 			ArrayList<PasswordSerialized> pwdS = new ArrayList<PasswordSerialized>();
@@ -38,6 +56,7 @@ public class FileManager {
 	        
 	        oos.writeObject(pwdS);
 	        oos.close();
+	        fop.close();
 	        
 			return true;
 		}
@@ -56,6 +75,7 @@ public class FileManager {
 	        woi = (ArrayList<PasswordSerialized>)ois.readObject();
 	   
 	        ois.close();
+	        fis.close();
 	        
 	        ArrayList<Password> pswL = new ArrayList<Password>();
 	        for(PasswordSerialized pwS : woi) {
@@ -65,7 +85,7 @@ public class FileManager {
 			return pswL;
 		}	
 		catch(Exception e) {
-			return null;
+			return new ArrayList<Password>();
 		}
 	}
 }	
