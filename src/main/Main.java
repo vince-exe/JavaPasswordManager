@@ -10,6 +10,7 @@ public class Main {
 	private static final byte UPDT_PSW = 4;
 	private static final byte DECR_PSW = 5;
 	private static final byte BACKUP = 6;
+	private static final byte LOAD_BACKUP = 7;
 	
 	private static final byte EXIT = 0;
 	
@@ -48,6 +49,7 @@ public class Main {
 				System.out.print("\n[ System Error ]: 400, the software failed to create the .Backups folder.\nCheck README.md to solve the error.");
 				System.exit(-1);
 			};
+			System.out.print("\nSuccessfully created System Backup Folder!\n");
 		}
 		
 		passwordManager = new PasswordManager(FileManager.loadPasswords(FileManager.appUserPasswords));
@@ -102,6 +104,10 @@ public class Main {
 					break;
 				
 				case BACKUP:
+					OptionsManager.backup(scanner);
+					break;
+				
+				case LOAD_BACKUP:
 					break;
 					
 				case EXIT:

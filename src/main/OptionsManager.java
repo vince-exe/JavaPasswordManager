@@ -1,5 +1,7 @@
 package main;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import password.Password;
 
@@ -13,6 +15,9 @@ public class OptionsManager {
 	private static final byte MAX_PWD_CONTENT_LEN = 50;
 	private static final byte MIN_PWD_CONTENT_LEN = 1;
 	
+	/**
+	 * prints all the passwords contained in the PasswordManager
+	 */
  	private static void printPasswords() {
  		for(int i = 0; i < Main.passwordManager.getSize(); i++) {
  			Password tmp = Main.passwordManager.getPasswordAt(i);
@@ -21,6 +26,11 @@ public class OptionsManager {
  		}
  	}
  	
+ 	/**
+ 	 * Print all the decripted passwords contained in the PasswordManager
+ 	 * 
+ 	 * @param key the key that will be used to decrypt the passwords.
+ 	 */
  	private static void decryptAll(String key) {
  		String content = new String();
  		int index = 0;
@@ -42,6 +52,20 @@ public class OptionsManager {
  			}
  			index++;
  		}
+ 	}
+ 	
+ 	/**
+ 	 * This method will return the current date based on the format that it will be passed.
+ 	 * 
+ 	 * @param format the format used to get the date , like: yyyy/MM/dd HH:mm:ss
+ 	 * 
+ 	 * @return the current date based on the format
+ 	 */
+ 	private static String getDateTimeNow(String format) {
+ 	   DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);  
+ 	   LocalDateTime now = LocalDateTime.now();  
+ 	   
+ 	   return dtf.format(now); 
  	}
  	
  	/**
@@ -218,7 +242,12 @@ public class OptionsManager {
  			System.out.print("\nSuccessfully removed the password\n");
  		}
  	}
- 	
+ 
+ 	/**
+ 	 * Update Password Menu
+ 	 *  
+ 	 * @param sc a scanner to read informations from the System.in
+ 	 */
  	public static void updatePassword(Scanner sc) {
  		Password p = privateDelPwd(sc);
  		String content;
@@ -234,5 +263,37 @@ public class OptionsManager {
  			Main.passwordManager.addPsw(p.getTitle(), content, masterKey);
  			System.out.print("\nSuccessfully update the password\n");
  		}
+ 	}
+
+ 	/**
+ 	 * Backup Passwords Menu
+ 	 * 
+ 	 * @param sc a scanner to read informations from the System.in
+ 	 */
+ 	public static void backup(Scanner sc) {
+ 		if(Main.passwordManager.getSize() == 0) {
+ 			System.out.print("\nCan't execute a backup on an empty Passwords List\n");
+ 			return;
+ 		}
+ 		
+ 		String currDate = OptionsManager.getDateTimeNow("dd-MM-yyyy HH-mm-ss");
+ 		String pathToStore = FileManager.appBackupPath + "\\" + currDate + ".txt";
+ 		String opt;
+ 		
+ 		System.out.print("\nA new backup with title: " + currDate + " will be created, continue? ( yes / no ): ");
+ 		opt = sc.nextLine().toLowerCase();
+ 		
+ 		if(!opt.equals("yes")) {
+ 			return;
+ 		}
+ 		
+		if(!FileManager.mkfile(pathToStore) || !FileManager.storePasswords(Main.passwordManager.getPswList(), pathToStore)) {
+			System.out.print("\nThe software failed to execute the backup\nPress any key to continue...");
+			sc.nextLine();
+		}
+		else {
+			System.out.print("\nSuccessfully created the backup\nPress any key to continue...");
+			sc.nextLine();
+		}
  	}
 }
