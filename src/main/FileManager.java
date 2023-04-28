@@ -15,10 +15,18 @@ import password.PasswordSerialized;
 public class FileManager {
 	public static String appUserPasswords; 
 	public static String appDirPath;
+	public static String appBackupPath;
 	
-	public static void init() {
+	public static boolean init() {
 		appUserPasswords = System.getenv("APPDATA") + "\\.PasswordManager\\user_passwords.txt";
 		appDirPath = System.getenv("APPDATA") + "\\.PasswordManager";
+		appBackupPath = appDirPath + "\\.Backups";
+		
+		if(appUserPasswords == null || appDirPath == null) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	public static boolean checkPath(String path) {

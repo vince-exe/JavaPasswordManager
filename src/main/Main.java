@@ -16,7 +16,10 @@ public class Main {
 	public static PasswordManager passwordManager;
 	
 	public static void init() {
-		FileManager.init();
+		if(!FileManager.init()) {
+			System.out.print("\n[ System Error ]: 999, the software failed to initialize the components.\nCheck README.md to solve the error.");
+			System.exit(-1);
+		};
 		
 		/* checks if the folder doesn't exist */
 		if(!FileManager.checkPath(FileManager.appDirPath)) {
@@ -38,6 +41,13 @@ public class Main {
 				}
 				System.out.print("\nSuccessfully created System Files!\n");
 			}
+		}
+		
+		if(!FileManager.checkPath(FileManager.appBackupPath)) {
+			if(!FileManager.mkdir(FileManager.appBackupPath)) {
+				System.out.print("\n[ System Error ]: 400, the software failed to create the .Backups folder.\nCheck README.md to solve the error.");
+				System.exit(-1);
+			};
 		}
 		
 		passwordManager = new PasswordManager(FileManager.loadPasswords(FileManager.appUserPasswords));
