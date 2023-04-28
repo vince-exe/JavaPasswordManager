@@ -296,4 +296,13 @@ public class OptionsManager {
 			sc.nextLine();
 		}
  	}
+
+ 	/**
+ 	 * Load Backup Menu
+ 	 * 
+ 	 * @param sc a scanner to read informations from the System.in
+ 	 */
+ 	public static void loadBackup(Scanner sc) {
+ 		
+ 	}
 }
