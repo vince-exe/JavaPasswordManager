@@ -17,6 +17,44 @@ public class PasswordManager {
 	private ArrayList<Password> pwdList;
 	private final static String ALGORITHM = "AES/CBC/PKCS5Padding";
 	
+	private static String encrypt_(String algorithm, String input, SecretKey key, IvParameterSpec iv) {
+		try {
+		    Cipher cipher = Cipher.getInstance(algorithm);
+		    cipher.init(Cipher.ENCRYPT_MODE, key, iv);
+		    
+		    byte[] cipherText = cipher.doFinal(input.getBytes());
+		    
+		    return Base64.getEncoder().encodeToString(cipherText);
+		}
+		catch(Exception e) {
+			return null;
+		}
+	}
+	
+	private static String decrypt_(String algorithm, String cipherText, SecretKey key, IvParameterSpec iv)  {
+		try {
+		    Cipher cipher = Cipher.getInstance(algorithm);
+		    cipher.init(Cipher.DECRYPT_MODE, key, iv);
+		    
+		    byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(cipherText));
+		    
+		    return new String(plainText);
+		}
+		catch(Exception e) {
+			return null;
+		}
+	}
+	
+	public void clear() {
+		this.pwdList.clear();
+	}
+	
+	public void reload(ArrayList<Password> nPL) {
+		for(Password p : nPL) {
+			this.pwdList.add(p);
+		}
+	}
+	
 	public ArrayList<Password> getPswList() {
 		return this.pwdList;
 	}
@@ -121,34 +159,6 @@ public class PasswordManager {
 		    SecretKey secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
 		    
 		    return secret;
-		}
-		catch(Exception e) {
-			return null;
-		}
-	}
-	
-	private static String encrypt_(String algorithm, String input, SecretKey key, IvParameterSpec iv) {
-		try {
-		    Cipher cipher = Cipher.getInstance(algorithm);
-		    cipher.init(Cipher.ENCRYPT_MODE, key, iv);
-		    
-		    byte[] cipherText = cipher.doFinal(input.getBytes());
-		    
-		    return Base64.getEncoder().encodeToString(cipherText);
-		}
-		catch(Exception e) {
-			return null;
-		}
-	}
-	
-	private static String decrypt_(String algorithm, String cipherText, SecretKey key, IvParameterSpec iv)  {
-		try {
-		    Cipher cipher = Cipher.getInstance(algorithm);
-		    cipher.init(Cipher.DECRYPT_MODE, key, iv);
-		    
-		    byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(cipherText));
-		    
-		    return new String(plainText);
 		}
 		catch(Exception e) {
 			return null;

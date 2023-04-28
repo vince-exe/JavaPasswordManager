@@ -2,6 +2,7 @@ package main;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Scanner;
 import password.Password;
 
@@ -16,13 +17,25 @@ public class OptionsManager {
 	private static final byte MIN_PWD_CONTENT_LEN = 1;
 	
 	/**
-	 * prints all the passwords contained in the PasswordManager
+	 * This method will print all the passwords contained in the PasswordManager
+	 * 
 	 */
  	private static void printPasswords() {
  		for(int i = 0; i < Main.passwordManager.getSize(); i++) {
  			Password tmp = Main.passwordManager.getPasswordAt(i);
  			System.out.print("\nIndex: " + i +
  							 "\nTitle: " + tmp.getTitle() + "\n");
+ 		}
+ 	}
+ 	
+ 	/**
+ 	 * This method will print all the backups contained in the BackupsList
+ 	 * 
+ 	 */
+ 	private static void printBackupPasswords() {
+ 		for(int i = 0; i < Main.backupList.size(); i++) {
+ 			System.out.print("\nIndex: " + i +
+ 							 "\nTitle: " + Main.backupList.get(i) + "\n");
  		}
  	}
  	
@@ -303,6 +316,62 @@ public class OptionsManager {
  	 * @param sc a scanner to read informations from the System.in
  	 */
  	public static void loadBackup(Scanner sc) {
+ 		if(Main.backupList.size() == 0) {
+ 			System.out.print("\nYou don't have any backup saved\nPress any key to continue...");
+ 			sc.nextLine();
+ 			
+ 			return;
+ 		}
  		
+ 		int index;
+ 		OptionsManager.printBackupPasswords();
+ 		
+ 		try {
+ 	 		System.out.print("\nInsert the index ( 0 / " + (Main.backupList.size() - 1) + " ): ");
+ 	 		index = sc.nextInt();
+ 	 		sc.nextLine();
+ 		}
+ 		catch(Exception e) {
+ 			sc.nextLine();
+ 			
+ 			System.out.print("\nInvalid Index!\nPress any key to continue...");
+ 			sc.nextLine();
+ 			
+ 			return;
+ 		}
+ 		
+ 		if(index < 0 || index >= Main.backupList.size()) {
+ 			System.out.print("\nInvalid Index!\nPress any key to continue...");
+ 			sc.nextLine();
+ 			
+ 			return;
+ 		}
+ 		
+ 		String opt;
+ 		/* check if the user has the passwords list with some password inside */
+ 		if(Main.passwordManager.getSize() != 0) {
+ 			System.out.print("\n[ Warning ]: Your last save will be rewritten with this backup, are you sure you want to proceed? ( yes / no ): ");
+ 			opt = sc.nextLine().toLowerCase();
+ 			
+ 			if(!opt.equals("yes")) {
+ 				return;
+ 			}
+ 		}
+ 		Main.passwordManager.clear();
+ 	
+ 		/* load the backup */
+ 		String path = FileManager.appBackupPath + "\\" + Main.backupList.get(index) + ".txt";
+ 		
+ 		ArrayList<Password> newPL = FileManager.loadPasswords(path);
+ 		Main.passwordManager.reload(newPL);
+ 		
+ 		if(newPL.isEmpty() || !FileManager.storePasswords(Main.passwordManager.getPswList(), FileManager.appUserPasswords)) {
+ 			System.out.print("\nThe software failed to load the backup\nPress any key to continue...");
+ 			sc.nextLine();
+ 		}
+ 		else {
+ 			System.out.print("\nSuccessfully loaded the backup\nPress any key to continue...");
+ 			sc.nextLine();
+ 		}
  	}
 }
