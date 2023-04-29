@@ -2,7 +2,7 @@
 ### <p align="center"> 💻 An application that allows the user to handle his passwords in a safe way ( Windows ) only. 💻</p><br>
 
 ## <p align="center">🔨 Requirements To Build 🔨</p>
-#### <p align="center">-> 🕹️ Java ( Latest version if it's possible ) 🕹️ <- </p><br>
+#### <p align="center">-> 🕹️ Java >= 19.0.2 🕹️ <- </p><br>
 
 ## <p align="center">💬 Application Info 💬</p>
 ### <p align="center"> 💬 The application will use the master key ( choosen by you ) for each new password </p>
